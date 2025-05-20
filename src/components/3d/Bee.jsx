@@ -13,60 +13,43 @@ import { useGLTF, useAnimations, useTexture } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 import gsap from "gsap";
-import { useGSAP} from "@gsap/react";
-import ScrollTrigger from 'gsap/ScrollTrigger'
-import { Html } from '@react-three/drei';
+import { useGSAP } from "@gsap/react";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import { Html } from "@react-three/drei";
 
-export function Bee({props,onSentData}) {
-
-
-
-    const sendData = () => {
-    onSentData('Hello from Child!');
+export function Bee({ props, onSentData }) {
+  const sendData = () => {
+    onSentData("Hello from Child!");
   };
-
-
-
-
-  
-
-
-
-
 
   const group = React.useRef();
   const { scene, animations } = useGLTF("/bee.glb");
-
 
   // let mixture ;
   //    mixture = new THREE.AnimationMixer(scene);
   //    mixture.clipAction(animations[1]).play();
   //    mixture.update(0.02);
 
-  
- const [first, setfirst] = useState(true);
+  const [first, setfirst] = useState(true);
 
   const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes, materials } = useGraph(clone);
   const { actions } = useAnimations(animations, group);
 
-useEffect(() => {
-  const flag = first ? 1 : 2;
+  useEffect(() => {
+    const flag = first ? 1 : 2;
 
-  const prev = actions[animations[flag === 2 ? 1 : 0]?.name];
-  const next = actions[animations[flag === 1 ? 1 : 0]?.name];
+    const prev = actions[animations[flag === 2 ? 1 : 0]?.name];
+    const next = actions[animations[flag === 1 ? 1 : 0]?.name];
 
-  if (prev && next && prev !== next) {
-    prev.fadeOut(0.5);       // Smoothly fade out over 0.5s
-    next.reset().fadeIn(0.5).play(); // Reset, fade in and play
-  } else if (next) {
-    next.reset().fadeIn(0.5).play(); // In case prev doesn't exist
-  }
+    if (prev && next && prev !== next) {
+      prev.fadeOut(0.5); // Smoothly fade out over 0.5s
+      next.reset().fadeIn(0.5).play(); // Reset, fade in and play
+    } else if (next) {
+      next.reset().fadeIn(0.5).play(); // In case prev doesn't exist
+    }
+  }, [actions, animations, first]);
 
-}, [actions, animations, first]);
-
-
- 
   const matcapTexture = useTexture("/bronze-bl/bronze_preview.jpg");
 
   const bodyMaterial = new THREE.MeshPhongMaterial({
@@ -79,9 +62,8 @@ useEffect(() => {
   //   beeRef.current.rotation.y += delta * 0;
   // });
 
-
   useGSAP(() => {
-    gsap.registerPlugin(ScrollTrigger)
+    gsap.registerPlugin(ScrollTrigger);
     gsap.fromTo(
       beeRef.current.position,
       { z: -2000 },
@@ -109,12 +91,19 @@ useEffect(() => {
     const bee = beeRef.current.position;
   });
 
-
   return (
     <group ref={group} {...props} dispose={null}>
-     <Html>
-       <button onClick={()=> {setfirst(!first);sendData}} className=" absolute -right-200 top-50 rounded-full text-red-50 p-5 bg-red-500">GO</button>
-     </Html>
+      <Html>
+        <button
+          onClick={() => {
+            setfirst(!first);
+            sendData();
+          }} // ✅
+          className=" absolute -right-200 top-50 rounded-full text-red-50 p-5 bg-red-500"
+        >
+          GO
+        </button>
+      </Html>
       <group name="Sketchfab_Scene">
         <group name="Sketchfab_model" rotation={[-Math.PI / 2, 0, -10.73]}>
           <group name="root">
